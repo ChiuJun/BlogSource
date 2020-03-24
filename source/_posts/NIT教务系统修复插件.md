@@ -19,12 +19,12 @@ categories:
 解决非IE内核访问教务处出现无法创建对象、权限认证失败等问题。  
 有问题请联系jiabi@nit.edu.cn
 
-#### 效果图：
+### 效果图：
 
 ![demo](https://raw.githubusercontent.com/ChiuJun/nit_jw_repair/master/img/demo.jpg)
 
 
-#### 使用指南：
+### 使用指南：
 
 1、下载[release](https://github.com/JiaBiNiang/nit_jw_repair/files/4207787/nit_jw_repair.zip)或[百度云:aute]()中的nit_jw_repair.zip文件并解压
 
@@ -58,7 +58,7 @@ YouTube 4K60 无压力
 ```  
 恳请会写前端的大佬协助完善  
 
-#### 致谢：
+### 致谢：
 
 本插件并非作者原创  
 感谢东北师范大学 [Efly Studio](https://github.com/EflyStudio/nenu-jwc-repair) 提供的JS脚本。  
