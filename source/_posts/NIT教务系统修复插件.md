@@ -5,7 +5,7 @@ cover: false
 toc: true
 mathjax: true
 date: 2020-03-24 01:37:29
-img: /medias/featureimages/jw_repair_demo.jpg
+img: http://q7qon7hdm.bkt.clouddn.com/medias/featureimages/jw_repair.jpg
 password:
 summary: 如何使用插件，方便同学阅读
 tags:

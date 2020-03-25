@@ -2,7 +2,7 @@
 title: 微机原理与接口技术 课程实验
 top: false
 cover: false
-img: /medias/featureimages/code.jpg
+img: http://q7qon7hdm.bkt.clouddn.com/medias/featureimages/code.jpg
 toc: true
 mathjax: true
 date: 2020-03-25 11:06:44
@@ -10,7 +10,7 @@ password:
 summary: 记录该课程实验相关内容
 tags:
     - LAB
-    - Assembly language
+    - ASM
 categories:
     - 微机原理与接口技术
     - 课程实验
