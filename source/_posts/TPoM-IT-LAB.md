@@ -80,11 +80,11 @@ Copyright (C) Microsoft Corp 1993.  A1l rights reserved.
 ###  三、实验结果分析及实验报告
 1. LAB1_1: 略
 2. LAB1_2:  
-    ![LAB1_2 Result](/images/TPoM-IT-LAB/lab1_2.jpg)
+    ![LAB1_2 Result](http://q7qon7hdm.bkt.clouddn.com/images/TPoM-IT-LAB/lab1_2.jpg)
 3. LAB1_3: 显存区域，无现象
 4. LAB1_4:  
-    ![LAB1_4 Code](/images/TPoM-IT-LAB/lab1_4.jpg)
-    ![LAB1_4 Result](/images/TPoM-IT-LAB/lab1_4_result.jpg)
+    ![LAB1_4 Code](http://q7qon7hdm.bkt.clouddn.com/images/TPoM-IT-LAB/lab1_4.jpg)
+    ![LAB1_4 Result](http://q7qon7hdm.bkt.clouddn.com/images/TPoM-IT-LAB/lab1_4_result.jpg)
 
 ## 实验二 数据处理实验
 
@@ -128,6 +128,6 @@ Copyright (C) Microsoft Corp 1993.  A1l rights reserved.
 
 ###  三、实验结果分析及实验报告
 1. LAB2_1:  
-    ![LAB2_1 Result](/images/TPoM-IT-LAB/lab2_1.jpg)
+    ![LAB2_1 Result](http://q7qon7hdm.bkt.clouddn.com/images/TPoM-IT-LAB/lab2_1.jpg)
 2. LAB2_2:  
-    ![LAB2_2 Result](/images/TPoM-IT-LAB/lab2_2.jpg)
+    ![LAB2_2 Result](http://q7qon7hdm.bkt.clouddn.com/images/TPoM-IT-LAB/lab2_2.jpg)
