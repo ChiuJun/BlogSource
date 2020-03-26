@@ -7,7 +7,7 @@ toc: true
 mathjax: true
 date: 2020-03-26 15:20:14
 password:
-summary: Java EE (SSM) 企业应用实践 第一章 MyBatis基础
+summary: Java EE (SSM) 企业应用实践 第1章 MyBatis基础
 tags:
     - J2EE
     - SSM
@@ -79,7 +79,7 @@ ORM的全称是Object-Relation Mapping，即对象-关系映射。ORM是一种�
             ReuseExecutor（重用预处理语句prepared statements）  
             SimpleExecutor（普通的执行器）      
         - CachingExecutor（缓存执行器）  
-            Mybatis在Executor的设计上面使用了装饰者模式，我们可以用CachingExecutor来装饰前面的三个执行器目的就是用来实现缓存。
+            MyBatis在Executor的设计上面使用了装饰者模式，我们可以用CachingExecutor来装饰前面的三个执行器目的就是用来实现缓存。
     - Executor（执行器）将要执行的SQL语句信息封装成MappedStatement对象  
     - 在执行SQL语句之前，Executor通过MappedStatement对象将输入的Java数据映射到SQL语句上
     - 在执行SQL语句之后，Executor通过MappedStatement对象将SQL语句的执行结果映射为Java数据  
@@ -88,7 +88,7 @@ ORM的全称是Object-Relation Mapping，即对象-关系映射。ORM是一种�
 
 ### SqlSessionFactory  
 - 创建SqlSession对象
-- 每一个Mybatis应用程序都以SqlSessionFactory为基础，**SqlSessionFactory存在于Mybatis应用的整个生命周期**。
+- 每一个Mybatis应用程序都以SqlSessionFactory为基础，**SqlSessionFactory存在于MyBatis应用的整个生命周期**。
 - 一般使用单例模式创建SqlSessionFactory对象，即一个数据库对应一个   SqlSessionFactory对象
 - SqlSessionFactory对象由SqlSessionFactoryBuilder对象创建
     - SqlSessionFactoryBuilder.build()有5个重载：
