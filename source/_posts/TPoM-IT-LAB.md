@@ -12,7 +12,7 @@ tags:
     - LAB
     - ASM
 categories:
-    - 微机原理与接口技术
+    - 微机原理
     - 课程实验
 ---
 
