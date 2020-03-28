@@ -6,10 +6,10 @@ img: 'http://q7qon7hdm.bkt.clouddn.com/chiu.jpg'
 toc: true
 mathjax: true
 date: 2020-03-28 12:09:34
-password:
+password: 5a72b76edf735b4ceacb73cb44e85f3bf8aa46f75d9b92fa2c5860a9f0c1dc60
 summary: Happy Birthday
-tags: Chiu
-categories: Pig
+tags: Toys
+categories: Toys
 ---
 ```
     __  __                             
