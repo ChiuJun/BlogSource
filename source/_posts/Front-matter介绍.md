@@ -10,6 +10,7 @@ password:
 summary: 关于Front-matter，方便查看
 tags: 
     - Hexo
+    - 转载
     - 摘录
 categories:
     - Refer
