@@ -9,11 +9,11 @@ date: 2020-03-25 11:06:44
 password:
 summary: 记录该课程实验相关内容
 tags:
-    - LAB
     - ASM
+    - LAB
+    - 课程实验
 categories:
     - 微机原理
-    - 课程实验
 ---
 
 #  微机原理与接口技术 课程实验
