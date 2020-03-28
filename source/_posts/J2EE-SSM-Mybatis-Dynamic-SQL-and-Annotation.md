@@ -2,7 +2,7 @@
 title: JavaEE(SSM) MyBatis动态SQL和注解
 top: false
 cover: false
-img: 'https://blog.jiabi.obs.cn-east-3.myhuaweicloud.com/medias/featureimages/ssm.jpg'
+img: 'http://q7qon7hdm.bkt.clouddn.com/medias/featureimages/ssm.jpg'
 toc: true
 mathjax: true
 date: 2020-03-27 22:42:13
