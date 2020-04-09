@@ -86,9 +86,9 @@ public class Base64Utils{
 }
 ```
 
-## MD5Utils
+## MessageDigestUtils
 
-- 实现使用MD5加密密码的工具类
+- 使用MessageDigest实现加密字符串的工具类
 
 ### 前置知识
 
@@ -136,7 +136,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class MD5Utils{
+public class MessageDigestUtils {
 
 	public static String md5(String password){
 
@@ -431,7 +431,7 @@ public class EmailUtils {
 			message.setSubject("锋迷网激活码","utf-8");
 			//获取本机的ip地址
 			String ip = Inet4Address.getLocalHost().getHostAddress();
-			String url = "http://"+ip+":8080/chapter16/activate?e="+ Base64Utils.encode(user.getEmail())+"&c="+Base64Utils.encode(user.getActivatecode());
+			String url = "http://"+ip+":8086/PhoneNet/activate?e="+ Base64Utils.encode(user.getEmail())+"&c="+Base64Utils.encode(user.getActivatecode());
 			//设置正文信息
 			message.setContent(user.getUsername()+",欢迎你加入我们<br>为了更好体验我们的产品，请<a href='"+url+"'>点击激活 "+url+"</a>","text/html;charset=utf-8");
 			//设置日期
