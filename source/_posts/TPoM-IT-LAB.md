@@ -31,6 +31,7 @@ Copyright (C) Microsoft Corp 1993.  A1l rights reserved.
 ## 实验一  Debug 的使用
 
 ### 一、实验内容及要求
+
 1. 查看寄存器中的内容。
 2. 查看内存中的内容  
     PC 主板中有一个生产日期，在内存 FFF00~FFFFFH 的某几个单元中。请找到这个生产日
@@ -57,6 +58,7 @@ Copyright (C) Microsoft Corp 1993.  A1l rights reserved.
     ```
 
 ###  二、实验原理及步骤
+
 1. 进入 Debug 的方法
 2. 用 R 命令查看、改变 CPU 寄存器的内容  
     R 查看寄存器内容  
@@ -78,6 +80,7 @@ Copyright (C) Microsoft Corp 1993.  A1l rights reserved.
     - 方法二：A
 
 ###  三、实验结果分析及实验报告
+
 1. LAB1_1: 略
 2. LAB1_2:  
     ![LAB1_2 Result](http://q7qon7hdm.bkt.clouddn.com/images/TPoM-IT-LAB/lab1_2.jpg)
@@ -89,10 +92,12 @@ Copyright (C) Microsoft Corp 1993.  A1l rights reserved.
 ## 实验二 数据处理实验
 
 ### 一、实验内容及要求
+
 1. 编程从键盘上输入一个字符并显示。
 2. 编程实现 2 的 4 次方。
 
 ###  二、实验原理及步骤
+
 1. 单字符显示
     ```x86asm
     assume cs:code
@@ -127,7 +132,110 @@ Copyright (C) Microsoft Corp 1993.  A1l rights reserved.
     ```
 
 ###  三、实验结果分析及实验报告
+
 1. LAB2_1:  
     ![LAB2_1 Result](http://q7qon7hdm.bkt.clouddn.com/images/TPoM-IT-LAB/lab2_1.jpg)
 2. LAB2_2:  
     ![LAB2_2 Result](http://q7qon7hdm.bkt.clouddn.com/images/TPoM-IT-LAB/lab2_2.jpg)
+
+## 实验三 分支程序设计
+
+### 一、实验内容及要求
+
+- 某班 20 人，统计成绩 90 分以上，80-89，70-79，60-69 分及 60 分以下的人数
+- 当前数据段中 DATA1 开始的 20 个字节单元中，存放某课程的考试成绩
+- 统计人数存放在同一数据段的 DATA2 开始的 5 个字节单元中
+- 在屏幕上显示统计结果
+
+###  二、实验原理及步骤
+
+```x86asm
+assume cs:code, ds:data
+
+data segment
+    data1 db 50,61,62,78,65,89,90,76,88,91,52,68,78,95,81,82,75,82,55,87
+    data2 db 5 dup (0)
+data ends
+
+stack segment
+    dw 10h dup (0)
+stack ends
+
+code segment
+
+start:
+    mov ax,data
+    mov ds,ax
+
+    mov ax,stack
+    mov ss,ax
+    mov sp,10h
+
+    mov cx,20
+    lea si, data1
+    lea di, data2
+again: 
+        mov al,[si]
+
+        cmp al,90
+        jc next1
+        inc byte ptr[di]
+        jmp newRound
+    next1: 
+        cmp al,80
+        jc next2
+        inc byte ptr[di+1]
+        jmp newRound
+    next2: 
+        cmp al,70
+        jc next3
+        inc byte ptr[di+2]
+        jmp newRound
+    next3: 
+        cmp al,60
+        jc next4
+        inc byte ptr[di+3]
+        jmp newRound
+    next4: 
+        inc byte ptr[di+4]
+
+    newRound: 
+        inc si
+    
+loop again
+
+    mov cx,5
+    lea di, data2
+show_result:     
+    call show_str
+    inc di
+loop show_result
+
+mov ax,4c00h
+int 21h
+
+show_str:
+    push dx
+    push ax
+    push cx
+    mov cl,byte ptr[di]
+
+    or byte ptr[di],30h
+    mov dl,[di]
+    mov ah,2
+    int 21h
+
+    mov byte ptr[di],cl
+    pop cx
+    pop ax
+    pop dx
+ret
+
+code ends
+
+end start
+```
+
+###  三、实验结果分析及实验报告
+
+![LAB3 Result](http://q7qon7hdm.bkt.clouddn.com/images/TPoM-IT-LAB/lab3_result.jpg)
