@@ -156,6 +156,12 @@ if(id===1){
 - 解决了 admin/admin.jsp 注销后返回页面错误登录的BUG
 - 解决了 GoodsTypeController 中 queryNameAndFlag 未进行非空验证的BUG  
 - 解决了 admin/login.jsp 背景图片被过滤的问题
+- 增加了触发器deleteOrder
+	t_order 表删除记录自动删除 t_orderdetail 表对应的记录
+```sql
+CREATE TRIGGER `deleteOrder` AFTER DELETE ON `t_order` FOR EACH ROW
+	 delete from t_orderdetail where oid = OLD.id;
+```
 
 - Tips：
 	- 浏览器的缓存会影响调试
@@ -174,4 +180,4 @@ if(id===1){
 ```
 - 购物车为空可以结算的BUG
 - t_cart 表 money 字段没有自动更新 **触发器？**
-- t_order 表删除记录没有删除 t_orderdetail 表对应的记录 **触发器？**
+
