@@ -162,7 +162,6 @@ if(id===1){
 CREATE TRIGGER `deleteOrder` AFTER DELETE ON `t_order` FOR EACH ROW
 	 delete from t_orderdetail where oid = OLD.id;
 ```
-- 解决了在服务器上存取 goodsImages 路径错误的问题
 
 - Tips：
 	- 浏览器的缓存会影响调试
@@ -181,4 +180,4 @@ CREATE TRIGGER `deleteOrder` AFTER DELETE ON `t_order` FOR EACH ROW
 ```
 - 购物车为空可以结算的BUG
 - t_cart 表 money 字段没有自动更新 **触发器？**
-
+- 部署在服务器上存取 goodsImages 路径错误
