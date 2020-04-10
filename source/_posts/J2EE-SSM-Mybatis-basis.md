@@ -143,6 +143,8 @@ ORM的全称是Object-Relation Mapping，即对象-关系映射。ORM是一种�
 - 登录MySQL
     ```
     mysql -u root -p
+    
+    mysql -h 121.36.171.44 -u root -p -P 3306
     ```  
 
 ### 安装 Navicat for MySQL
