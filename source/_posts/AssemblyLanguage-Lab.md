@@ -2,7 +2,7 @@
 title: Assembly Language Lab
 top: false
 cover: false
-img: 'http://q7qon7hdm.bkt.clouddn.com/medias/featureimages/asm3e.jpg'
+img: 'http://q7qon7hdm.bkt.clouddn.com/medias/featureimages/asm.jpg'
 toc: true
 mathjax: true
 date: 2020-04-13 01:32:21
@@ -456,4 +456,224 @@ Copyright (C) Microsoft Corp 1993.  A1l rights reserved.
 
 ## 实验6 实践课程中的程序
 
+1. 将课程中所有讲解过的程序上机调试，用Debug跟踪其执行过程，并在过程中进一步理解所讲内容。  
+    略
+
+2. 编程，完成问题7.9中的程序。
+    > 问题7.9  
+    编程，将 datasg 段中每个单词的前四个字母改为大写字母。  
+    ```x86asm
+    datasg segment  
+        db '1. display      '  
+        db '2. brows        '  
+        db '3. replace      '  
+        db '4. modify       '  
+    datasg ends
+    ```
+    [DOS环境与MASM版本](#toc-heading-1)  
+    在编写这个程序的过程中，遇到一个奇怪的问题： 
+    ``` x86asm
+    ;编译错误 error A2070:invalid instruction
+    mov al,[bx+3+si]
+    ;编译通过
+    mov al,byte ptr [bx+3+si]
+    ;编译通过
+    mov al,[bx+si+3]
+    ;编译通过
+    mov ax,[bx+3+si]
+    ```
+    简单查阅了[MASM6.1文档](https://github.com/ChiuJun/CSAPP_3e_Solutions/blob/master/Reference/MASM6.1%E6%96%87%E6%A1%A3.pdf)，没看出是什么原因导致，以下是完整的程序：
+    ```x86asm
+    assume cs:codeseg,ss:stackseg,ds:dataseg
+
+    stackseg segment
+    dw 0,0,0,0,0,0,0,0
+    stackseg ends
+
+    dataseg segment
+    db '1. display      '
+    db '2. brows        '
+    db '3. replace      '
+    db '4. modify       '
+    dataseg ends
+
+    codeseg segment
+    start:
+        mov ax,stackseg
+        mov ss,ax
+        mov sp,10H
+
+        mov ax,dataseg
+        mov ds,ax
+
+        mov bx,0
+        mov cx,4
+    s:
+        push cx
+        mov si,0
+        mov cx,4
+        
+        i:
+        mov al,[bx+si+3]
+        and al,11011111B
+        mov [bx+si+3],al
+        inc si
+        loop i
+
+        add bx,10H
+        pop cx
+    loop s
+
+        mov ax,4c00H
+        int 21H
+    codeseg ends
+
+    end start
+    ```
+    ![LAB6_2 Result](http://q7qon7hdm.bkt.clouddn.com/images/asmLab/lab6_2_result.jpg)
+
+## 实验7 寻址方式在结构化数据访问中的应用
+
+- 编程，将 data 段中的数据按如下格式写入到 table 段中，并计算21年中的人均收入(取整)，结果也按照下面的格式保存在table段中。  
+    ![LAB7 格式](http://q7qon7hdm.bkt.clouddn.com/images/asmLab/lab7_format.jpg)  
+    编写完之后，博主觉得这样的写法更容易出错，在书上记下了一个简单易懂的想法，之后在[实验10](#toc-heading-11)重新进行了编写。   
+    编写这个程序遇到一个新手容易忘记的问题：  
+    - mov 指令不能在两个存储单元之间直接传送数据  
+
+    以下是旧版本的代码：
+    ```x86asm
+    assume cs:codeseg
+
+    data segment
+    db '1975','1976','1977','1978','1979','1980','1981','1982','1983'
+    db '1984','1985','1986','1987','1988','1989','1990','1991','1992'
+    db '1993','1994','1995'
+
+    dd 16,22,382,1356,2390,8000,16000,24486,50065,97479,140417,197514
+    dd 345980,590827,803530,1183000,1843000,2759000,3753000,4649000,5937000
+
+    dw 3,7,9,13,28,38,130,220,476,778,1001,1442,2258,2793,4037,5635,8226
+    dw 11542,14430,15257,17800
+    data ends
+
+    table segment
+    db 21 dup ('year summ ne ?? ')
+    table ends
+
+    stack segment
+    db 16 dup (0)
+    stack ends
+
+    codeseg segment
+    start:
+        mov ax,data
+        mov ds,ax
+
+        mov ax,stack
+        mov ss,ax
+        mov sp,10H
+
+        mov ax,table
+        mov es,ax
+
+        mov bx,0
+        mov bp,0
+        mov di,0A8H
+        mov cx,15H
+    s:
+        push cx
+
+        mov cx,4
+        mov si,0
+        i:
+        mov dl,ds:[bp+si]
+        mov es:[bx+si],dl
+        inc si
+        loop i
+
+        push bp
+        add bp,54H
+        mov dx,ds:[bp]
+        mov es:[bx+5],dx
+        mov dx,ds:[bp+2]
+        mov es:[bx+7],dx
+        pop bp
+
+        mov dx,ds:[di]
+        mov es:[bx+0AH],dx
+        
+        mov DX,es:[bx+7]
+        mov AX,es:[bx+5]
+        div word ptr es:[bx+0AH]
+        mov es:[bx+0DH],AX
+
+        add bx,10H
+        add bp,4H
+        add di,2H
+        pop cx
+    loop s
+
+        mov ax,4c00H
+        int 21H
+    codeseg ends
+
+    end start
+    ```
+
+## 实验8 分析一个奇怪的程序
+
+- 分析下面的程序，在运行前思考，这个程序可以正确返回吗？  
+    运行后再思考：为什么是这种结果？  
+    通过这个程序加深对相关内容的理解。
+    ```x86asm
+    assume cs:codeseg
+
+    codeseg segment
+
+        mov ax,4c00h    ;0A77:0000
+        int 21h
+
+    start:    
+        mov ax,0
+    s:  nop             ;0A77:0008
+        nop             ;0A77:0009
+
+        mov di,offset s ;0A77:000A ;mov di,0008
+        mov si,offset s2           ;mov si,0020
+        mov ax,cs:[si]             ;mov ax,F6EB
+        mov cs:[di],ax             ;0A77:0008 EB
+                                   ;0A77:0009 F6
+    s0: jmp short s     ;0A77:0016 EBF0
+
+    s1: mov ax,0        ;0A77:0018
+        int 21h
+        mov ax,0
+                        ;注意这里在编译的时候已经计算好了offset
+    s2: jmp short s1    ;0A77:0020 EBF6 
+        nop             ;0A77:0022 NOP
+
+    codeseg ends
+
+    end start
+    ```
+    可以正确返回  
+    - 这里根据博主机器上跑的数据做了注释  
+    - 程序的入口为 mov ax, 0  
+    - 注意到指令jmp short s1占2字节  
+    于是指令
+        ```
+        mov di,offset s
+        mov si,offset s2
+        mov ax,cs:[si]
+        mov cs:[di],ax
+        ```
+        相当于使用通用寄存器AX做中转将s2处的指令复制到s处  
+    - 最后再跳转至s处执行复制过来的指令  
+        注意jmp short s1是段内转移的短转移，其只修改IP寄存器    
+        而编译的时候已经计算好了offset：8bit的有符号数 -8  
+        通过Debug可知s的段内偏移地址为 8  
+        所以在执行了s2处复制过来的指令后,IP将指向0  
+        因此可以正确返回  
+
+## 实验9 根据材料编程
 - 未完
