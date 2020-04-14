@@ -11,7 +11,7 @@ summary: 如何使用插件，方便同学阅读
 tags:
     - README
 categories:
-    - 随笔
+    - Toys
 ---
 
 # NIT教务系统修复插件

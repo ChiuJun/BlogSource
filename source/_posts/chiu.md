@@ -8,8 +8,10 @@ mathjax: true
 date: 2020-03-28 12:09:34
 password: 5a72b76edf735b4ceacb73cb44e85f3bf8aa46f75d9b92fa2c5860a9f0c1dc60
 summary: 这里什么都没有<@_@>
-tags: Toys
-categories: Toys
+tags: 
+    - Toys
+categories: 
+    - 随笔
 ---
 ```
     __  __                             

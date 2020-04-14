@@ -200,7 +200,7 @@ clicklove:
 profile:
   avatar: /medias/avatar.jpg
   career: 学生
-  introduction: 目前这还不是一个技术博客，而是我学习过程中的一个记录。<br>如果我所写的东西能够对你有些许的帮助，将是我最大的荣幸。<br>欢迎交流，也欢迎指出博客中的错误。
+  introduction: 目前这还不是一个技术博客，而是我学习过程中的一个记录，欢迎交流 :-)
 
 # config my projects informations in about page.
 # If you don't want to display this `My Projects` content, you can deactivate or delete this configuration.
