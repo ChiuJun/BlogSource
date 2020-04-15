@@ -1408,4 +1408,117 @@ end start
 
 ## 实验 11 编写子程序
 
+- 编写一个子程序，将包含任意字符，以 0 结尾的字符串中的小写字母转变成大写字母，描述如下。  
+    名称：letterc  
+    功能：将以 0 结尾的字符串中的小写字母转变成大写字母  
+    参数：ds:si指向字符串首地址  
+
+```x86asm
+assume cs:code
+
+data segment
+    db "Beginner's All-purpose Symbolic Instrcution Code.",0
+data ends
+
+stack segment
+    dw 10h dup (0)
+stack ends
+
+code segment
+
+begin:
+    mov ax,data
+    mov ds,ax
+
+    mov ax,stack
+    mov ss,ax
+    mov sp,10h
+
+    mov si,0
+    call letterc
+
+    mov dh,8
+    mov dl,3
+    mov cl,2
+    mov si,0
+    call show_str
+
+    mov ax,4c00h
+    int 21h
+
+letterc:
+    push si
+    push cx
+    pushf
+
+loopLetter:
+    mov ch,0
+    mov cl,[si]
+    cmp cl,61h
+    jb nextLetter
+    cmp cl,7ah
+    ja nextLetter
+    and cl,0dfh
+    mov [si],cl
+
+nextLetter: 
+    inc si
+    inc cx
+loop loopLetter
+
+    popf
+    pop cx
+    pop si
+ret
+
+show_str:
+    push ax
+    push bx
+    push cx
+    push dx
+    push di
+    push si
+
+    mov ax,0B800H
+    mov es,ax
+
+    mov al,2
+    mul dl
+    mov di,ax
+    mov al,0a0h
+    mul dh
+    mov bx,ax
+    add bx,di
+    
+    mov di,0
+    mov al,cl
+
+str_loop:
+    mov cx,0
+    mov cl,[si]
+    jcxz ok
+
+    mov ch,al
+    mov es:[bx+di],cx
+    
+    inc si
+    add di,2
+
+    jmp short str_loop
+ok:
+    pop si
+    pop di
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+ret
+
+code ends
+
+end begin
+```
+
+## 实验 12 编写0号中断的处理程序
+
 - 未完
