@@ -239,3 +239,104 @@ end start
 ###  三、实验结果分析及实验报告
 
 ![LAB3 Result](http://q7qon7hdm.bkt.clouddn.com/images/TPoM-IT-LAB/lab3_result.jpg)
+
+## 实验四 循环程序设计
+
+### 一、实验内容及要求
+
+- 利用循环编写 10 个数的排序程序，可以选择不同的排序算法实现。
+- 这里使用的希尔排序
+    - 增量序列使用的是最初Donald Shell给出的建议
+    - 这里假设需要排序的数为字类型，需要排序的数量少于2*(2^8-1)
+
+###  二、实验原理及步骤
+
+```x86asm
+assume cs:code
+
+data segment
+    buf dw 3,1,2,4,5,7,-6,8,-8,10
+    num = ($-buf)/2
+data ends
+
+stack segment
+    dw 20h dup (0)
+stack ends
+
+code segment
+
+start:
+    mov ax,data
+    mov ds,ax
+
+    mov ax,stack
+    mov ss,ax
+    mov sp,20h
+
+    call shellSort
+
+    mov ax,4c00h
+    int 21h
+
+shellSort:
+    push ax
+    push bx
+    push cx
+    push dx
+    push bp
+    push si
+    
+    mov ax,num
+    add ax,ax
+    mov si,ax
+;next Increment
+nextInc:
+    mov dl,2
+    div dl
+    mov ah,0
+    div dl
+    mov ah,0
+    add ax,ax
+
+        mov bx,ax   ;bx = increment
+    nextNum:
+        mov dx,[bx]
+
+        mov bp,bx   
+        cmpNum:
+            push bp
+            sub bp,ax
+            mov cx,ds:[bp]
+            pop bp
+            cmp dx,cx
+            jge getNextNum  ;dx >= cx
+            mov ds:[bp],cx
+        sub bp,ax
+        cmp bp,ax
+        jnb cmpNum  ;bp >= ax
+
+        getNextNum:
+        mov ds:[bp],dx
+    add bx,2
+    cmp bx,si
+    jb nextNum  ;bx < num
+
+cmp ax,2
+jne nextInc ;ax != 2
+
+    pop si
+    pop bp
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+ret
+
+code ends
+
+end start
+```
+
+###  三、实验结果分析及实验报告
+
+![LAB4 Result](http://q7qon7hdm.bkt.clouddn.com/images/TPoM-IT-LAB/MPLAB4.JPG)
