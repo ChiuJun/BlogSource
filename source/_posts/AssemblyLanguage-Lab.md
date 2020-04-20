@@ -1521,4 +1521,65 @@ end begin
 
 ## 实验 12 编写0号中断的处理程序
 
+- 编写0号中断的处理程序，使得除法溢出发生时，在屏幕中间显示字符串"divide error!"，然后返回到DOS。
+- 这里没有对中断处理程序使用到的寄存器进行保护
+
+```x86asm
+assume cs:code
+
+code segment
+
+start:
+    mov ax,cs
+    mov ds,ax
+    mov si,do0
+
+    mov ax,0
+    mov es,ax
+    mov di,200h
+
+    mov cx,do0end-do0
+    cld
+    rep movsb
+
+    mov word ptr es:[4*0],200h
+    mov word ptr es:[4*0+2],0
+
+    mov ax,4c00h
+    int 21h
+
+do0:
+    jmp do0start
+    db "divide error!"
+do0start:
+    mov ax,cs
+    mov ds,ax
+    mov si,202h
+
+    mov ax,0b800h
+    mov es,ax
+    mov di,12*160+34*2
+
+    mov cx,13
+    S:
+    mov al,[si]
+    mov es:[di],al
+    inc di
+    mov byte ptr es:[di],2
+    inc di
+    inc si    
+    loop s
+
+    mov ax,4c00h
+    int 21h
+do0end:
+    nop
+
+code ends
+
+end start
+```
+
+## 实验 13 编写、应用中断例程
+
 - 未完
