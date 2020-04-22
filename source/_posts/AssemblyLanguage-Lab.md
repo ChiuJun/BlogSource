@@ -1582,4 +1582,240 @@ end start
 
 ## 实验 13 编写、应用中断例程
 
+1. 编写并安装int 7ch中断例程，功能为显示一个用0结束的字符串，中断例程安装在0:200处。  
+    参数：(dh)=行号 (dl)=列号 (cl)=颜色 ds:si指向字符串首地址
+
+- 中断例程
+
+```x86asm
+assume cs:code
+
+code segment
+
+start:
+    mov ax,cs
+    mov ds,ax
+    mov si,do7c
+
+    mov ax,0
+    mov es,ax
+    mov di,200h
+
+    mov cx,do7cend-do7c
+    cld
+    rep movsb
+
+    mov word ptr es:[4*7ch],200h
+    mov word ptr es:[4*7ch+2],0
+
+    mov ax,4c00h
+    int 21h 
+
+do7c:
+    push ax
+    push cx
+    push si
+    push di
+    push es    
+
+    mov ax,0b800h
+    mov es,ax
+    mov di,0
+    mov al,160
+    mul dh
+    add di,ax
+    mov al,2
+    mul dl
+    add di,ax
+
+    mov al,cl
+s: 
+    mov cx,0
+    mov cl,ds:[si]
+    jcxz ok
+    mov ch,al
+    mov es:[di],cx
+
+    inc si
+    add di,2
+
+    jmp s
+ok:
+    pop es
+    pop di
+    pop si
+    pop cx
+    pop ax
+
+    iret
+do7cend:
+    nop
+
+code ends
+end start
+```
+
+- 测试代码
+
+```x86asm
+;TEST LAB13_1
+assume cs:code
+
+data segment
+    db "Welcome to masm!",0
+data ends
+
+stack segment
+    dw 10h dup (0)
+stack ends
+
+code segment
+
+start:
+    mov ax,data
+    mov ds,ax
+
+    mov ax,stack
+    mov ss,ax
+    mov sp,10h
+
+    mov dh,10
+    mov dl,10
+    mov cl,2
+    mov si,0
+    int 7ch
+    
+    mov ax,4c00h
+    int 21h
+
+code ends
+end start
+```
+
+2. 编写并安装int 7ch中断例程，功能为完成loop指令的功能。  
+    参数：(cx)=循环次数 (bx)=位移
+
+- 中断例程
+
+```x86asm
+assume cs:code
+
+code segment
+
+start:
+    mov ax,cs
+    mov ds,ax
+    mov si,do7c
+
+    mov ax,0
+    mov es,ax
+    mov di,200h
+
+    mov cx,do7cend-do7c
+    cld
+    rep movsb
+
+    mov word ptr es:[4*7ch],200h
+    mov word ptr es:[4*7ch+2],0
+
+    mov ax,4c00h
+    int 21h 
+
+do7c:
+    dec cx
+    jcxz ok
+    push bp
+    mov bp,sp
+    add [bp+2],bx
+    pop bp
+ok:
+    iret
+do7cend:
+    nop
+
+code ends
+end start
+```
+
+- 测试代码
+
+```x86asm
+;TEST LAB13_2
+assume cs:code
+
+stack segment
+    dw 10h dup (0)
+stack ends
+
+code segment
+
+start:
+    mov ax,stack
+    mov ss,ax
+    mov sp,10h
+
+    mov ax,0b800h
+    mov es,ax
+    mov di,160*12
+    mov bx,s-sEnd
+    mov cx,80
+s:
+    mov byte ptr es:[di],'!'
+    inc di
+    mov byte ptr es:[di],4
+    inc di
+    int 7ch
+sEnd:
+    nop
+
+    mov ax,4c00h
+    int 21h
+
+code ends
+end start
+```
+
+3. 下面的程序，分别在屏幕的第2、4、6、8行显示4句英文诗，补全程序。
+
+```x86asm
+assume cs:code
+
+code segment
+
+    s1: db 'Good,better,best,','$'
+    s2: db 'Never let it rest,','$'
+    s3: db 'Till good is better,','$'
+    s4: db 'And better,best.','$'
+    s : dw offset s1,offset s2,offset s3,offset s4
+    row: db 2,4,6,8
+start:
+    mov ax,cs
+    mov ds,ax
+    mov bx,offset s
+    mov si,offset row
+    mov cx,4
+ok:
+    mov bh,0
+    mov dh,ds:[si]
+    mov dl,0
+    mov ah,2
+    int 10h
+
+    mov dx,ds:[bx]
+    mov ah,9
+    int 21h
+    inc si
+    add bx,2
+    loop ok
+
+    mov ax,4c00h
+    int 21h
+
+code ends
+
+end start
+```
+
+## 实验 14 访问CMOS RAM
+
 - 未完
