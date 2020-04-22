@@ -1818,4 +1818,91 @@ end start
 
 ## 实验 14 访问CMOS RAM
 
+- 编程，以"年/月/日 时:分:秒"的格式，显示当前的日期、时间。
+    - 不得不说，这本书的曲线是相当顺滑的  
+    在实验13.3中，王爽老师把实验14可能要用到的技巧以实验的形式呈现
+    - 博主出了个挺搞笑的Bug，因为忘记加上"inc si"  
+    导致显示的时间是"20/20/20 20:20:20",还觉得好巧 :joy:
+    - 查验结果是否正确可以用date与time命令
+
+    ```x86asm
+    assume cs:code
+
+    stack segment
+        dw 10h dup (0)
+    stack ends
+
+    code segment
+        
+        dataPos: db 9,8,7,4,2,0
+    start:
+        mov ax,stack
+        mov ss,ax
+        mov sp,10h
+
+        mov ax,cs
+        mov ds,ax
+        mov si,offset dataPos
+
+        mov bx,0b800h
+        mov es,bx
+        mov di,160*12+32*2
+
+        mov cx,6
+    nextField:
+        push cx
+        
+        mov al,ds:[si]
+        inc si
+        out 70h,al
+        in al,71h
+
+        mov ah,al
+        mov cl,4
+        shr ah,cl
+        and al,0fh
+        
+        add ah,30h
+        add al,30h
+
+        mov es:[di],ah
+        inc di
+        mov byte ptr es:[di],2
+        inc di
+        mov es:[di],al
+        inc di
+        mov byte ptr es:[di],2
+        inc di
+
+        pop cx
+        
+        cmp cx,1
+        je doNotShow
+        
+        cmp cx,4
+        mov ah,32   ;ASCII 32 (space)
+        je show
+        mov ah,47   ;ASCII 47 /
+        ja show
+        mov ah,58   ;ASCII 58 :
+        jb show
+    show:
+        mov es:[di],ah
+        inc di
+        mov byte ptr es:[di],2
+        inc di
+
+    doNotShow:
+        loop nextField
+
+        mov ax,4c00h
+        int 21h
+
+    code ends
+
+    end start
+    ```
+
+## 实验 15 安装新的int9中断例程
+
 - 未完
