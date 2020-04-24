@@ -39,7 +39,7 @@ categories:
     所以这里需要安装相关的库  
     另外WSL不支持32位程序，所以用qemu-user-i386来跑32位程序
     ```bash
-    sudo service binfmt-support start
+    $ sudo service binfmt-support start
     ```
 - 自己下载材料的话  
     通过dlc检测是否符合编码规则  
