@@ -2,7 +2,7 @@
 title: PhoneNet 日志
 top: false
 cover: false
-img: 'http://q7qon7hdm.bkt.clouddn.com/medias/featureimages/ssm.jpg'
+img: 'http://q9apk9x38.bkt.clouddn.com/medias/featureimages/ssm.jpg'
 toc: true
 mathjax: true
 date: 2020-04-09 13:33:46

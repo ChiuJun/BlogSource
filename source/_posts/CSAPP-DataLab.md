@@ -2,7 +2,7 @@
 title: 深入理解计算机系统 DataLab
 top: false
 cover: false
-img: 'http://q7qon7hdm.bkt.clouddn.com/medias/featureimages/csapp_b.jpg'
+img: 'http://q9apk9x38.bkt.clouddn.com/medias/featureimages/csapp_b.jpg'
 toc: true
 mathjax: true
 date: 2020-04-21 01:05:48

@@ -2,7 +2,7 @@
 title: Chiu
 top: false
 cover: false
-img: 'http://q7qon7hdm.bkt.clouddn.com/chiu.jpg'
+img: 'http://q9apk9x38.bkt.clouddn.com/chiu.jpg'
 toc: true
 mathjax: true
 date: 2020-03-28 12:09:34
