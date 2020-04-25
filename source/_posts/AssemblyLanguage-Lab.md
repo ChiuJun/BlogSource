@@ -1905,4 +1905,90 @@ end start
 
 ## 实验 15 安装新的int9中断例程
 
+- 安装一个新的int 9中断例程  
+    功能：在DOS下，按下'A'键后，除非不再松开，如果松开，就显示满屏幕的'A'，其他键照常处理。
+- 这里没有写恢复中断向量的程序，感觉用了这个会被逼疯掉 233
+
+```x86asm
+assume cs:code
+
+stack segment
+    dw 20h dup (0)
+stack ends
+
+code segment
+
+start:
+    mov ax,stack
+    mov ss,ax
+    mov sp,20h
+
+    push cs
+    pop ds
+
+    mov ax,0
+    mov es,ax
+    mov di,200h
+
+    push es:[4*9]
+    pop es:[di]
+    add di,2
+    push es:[4*9+2]
+    pop es:[di]
+    add di,2
+
+    mov si,newInt9
+    mov cx,newInt9End-newInt9
+    cld
+    rep movsb
+
+    cli
+    mov word ptr es:[4*9],204h
+    mov word ptr es:[4*9+2],0
+    sti
+
+    mov ax,4c00h
+    int 21h
+
+newInt9:
+    push ax
+    push bx
+    push cx
+    push es
+
+    in al,60h
+
+    pushf
+    call dword ptr cs:[200h]
+
+    cmp al,10011110b
+    jne notA
+
+    mov ax,0b800h
+    mov es,ax
+    mov bx,0
+    mov cx,2000
+    s:
+        mov byte ptr es:[bx],41h
+        inc bx
+        mov byte ptr es:[bx],2
+        inc bx
+    loop s
+
+notA:
+    pop es
+    pop cx
+    pop bx
+    pop ax
+    iret
+newInt9End:
+    nop;
+
+code ends
+
+end start
+```
+
+## 实验 16 编写包含多个功能子程序的中断例程
+
 - 未完
