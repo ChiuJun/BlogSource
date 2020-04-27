@@ -1991,4 +1991,198 @@ end start
 
 ## 实验 16 编写包含多个功能子程序的中断例程
 
+- 安装一个新的int 7ch中断例程，为显示输出提供如下功能子程序：
+    1. 清屏
+    2. 设置前景色
+    3. 设置背景色
+    4. 向上滚动一行
+- 入口参数说明如下：
+    1. 用AH寄存器传递功能号：  
+        0 清屏
+        1 设置前景色
+        2 设置背景色
+        3 向上滚动一行  
+    2. 对于1、2号功能，用AL传送颜色值，AL∈{0,1,2,3,4,5,6,7}
+- 这里需要注意偏移地址的问题:  
+    - 将中断例程放在最前面  
+    - 入口地址改为20:0而不是0:200
+
+```x86asm
+assume cs:code
+
+stack segment
+    dw 20h dup (0)
+stack ends
+
+code segment
+
+int7c:
+    jmp short int7cBegin
+
+    table dw cls,setFgColor,setBgColor,scrollUp
+
+    int7cBegin:
+        push bx
+
+        cmp ah,3
+        ja int7cRet
+        
+        mov bl,ah
+        mov bh,0
+        add bx,bx
+        call word ptr table[bx]
+
+    int7cRet:
+        pop bx
+    iret
+
+    cls:
+        push bx
+        push cx
+        push es
+
+        mov bx,0b800h
+        mov es,bx
+        mov bx,0
+        mov cx,2000
+    clsLoop:
+        mov byte ptr es:[bx],' '
+        add bx,2
+        loop clsLoop
+
+        pop es
+        pop cx
+        pop bx
+    ret
+
+    setFgColor:
+        push bx
+        push cx
+        push es
+
+        mov bx,0b800h
+        mov es,bx
+        mov bx,1
+        mov cx,2000
+    setFgLoop:
+        and byte ptr es:[bx],11111000b
+        or byte ptr es:[bx],al
+        add bx,2
+        loop setFgLoop
+
+        pop es
+        pop cx
+        pop bx
+    ret
+    
+    setBgColor:
+        push bx
+        push cx
+        push es
+        
+        mov cl,4
+        shl al,cl
+
+        mov bx,0b800h
+        mov es,bx
+        mov bx,1
+        mov cx,2000
+    setBgLoop:
+        and byte ptr es:[bx],10001111b
+        or byte ptr es:[bx],al
+        add bx,2
+        loop setBgLoop
+
+        pop es
+        pop cx
+        pop bx
+    ret
+    
+    scrollUp:
+        push si
+        push di
+        push ds
+        push es
+        push ax
+        push cx
+
+        mov ax,0b800h
+        mov ds,ax
+        mov si,160
+        mov es,ax
+        mov di,0
+
+        cld
+        mov cx,24
+    scrollUpLoop:
+        push cx
+        mov cx,160
+        rep movsb
+        pop cx
+        loop scrollUpLoop
+
+        mov cx,80
+    clear:
+        mov byte ptr es:[di],' '
+        add di,2
+        loop clear
+
+        pop cx
+        pop ax
+        pop es
+        pop ds
+        pop di
+        pop si
+    ret
+
+int7cEnd:
+    nop
+
+start:
+    mov ax,stack
+    mov ss,ax
+    mov sp,20h
+
+    push cs
+    pop ds
+    mov si,int7c
+    mov ax,20h
+    mov es,ax
+    mov di,0
+
+    mov cx,int7cEnd-int7c
+    cld
+    rep movsb
+
+    ;install int 7ch
+    mov ax,0
+    mov es,ax
+    mov word ptr es:[4*7ch],0
+    mov word ptr es:[4*7ch+2],20h
+
+    ;Test int 7ch
+    mov ah,0
+    int 7ch
+
+    mov ah,1
+    mov al,2
+    int 7ch
+
+    mov ah,2
+    mov al,4
+    int 7ch
+
+    mov ah,3
+    int 7ch
+    
+    mov ax,4c00h
+    int 21h
+    
+code ends
+
+end start
+```
+
+## 实验 17 使用BIOS进行键盘输入和磁盘读写
+
 - 未完
