@@ -340,3 +340,301 @@ end start
 ###  三、实验结果分析及实验报告
 
 ![LAB4 Result](http://q9apk9x38.bkt.clouddn.com/images/TPoM-IT-LAB/MPLAB4.JPG)
+
+## 实验六 判断闰年的程序设计
+
+### 一、实验内容及要求
+
+- 实验目的：
+    1. 掌握子程序设计的基本方法  
+    包括子程序的定义、调用和返回，  
+    子程序中如何保护和恢复现场，  
+    主程序与子程序之间如何传送参数
+    2. 学习如何进行数据转换的处理方法
+- 编写程序，从键盘上输入一个四位数的年份，判断其是否为闰年。  
+    要求写出三个子程序：
+    1. 输入年份是否合法 
+    2. 将输入的年份字符转化成数字 
+    3. 判断该年份是否为闰年，判断方法为  
+        1）能被 4 整除但不能被 100 整除   
+        或者  
+        2）能被 400 整除
+        
+###  二、实验原理及步骤
+
+```x86asm
+aassume cs:code,ds:data
+
+stack segment
+    dw 20h dup (0)
+stack ends
+
+data segment
+    db 'year:','$'
+    db 10h dup (0)
+    db 'input illegal!','$'
+    db 'is leap','$'
+    db 'is nt leap','$'
+data ends
+
+code segment
+    top dw 0
+start:
+    mov ax,stack
+    mov ss,ax
+    mov sp,20h
+
+    mov ax,data
+    mov ds,ax
+
+    call cls
+    mov ah,2
+    mov bh,0
+    mov dh,12
+    mov dl,30
+    int 10h
+    mov ah,9
+    mov dx,0
+    int 21h
+    
+    mov dh,12
+    mov dl,35 
+    mov si,6
+    call getStr
+
+    mov ah,2
+    mov bh,0
+    mov dh,13
+    mov dl,30
+    int 10h
+
+    call transDigit
+    cmp dx,0
+    je llegal
+    ;illegal
+    mov ah,9
+    mov dx,22
+    int 21h
+    jmp mainRet
+llegal:
+    push ax
+    mov dx,0
+    mov cx,400
+    div cx
+    cmp dx,0
+    je isLeap
+    mov dx,0
+    pop ax
+    push ax    
+    mov cx,4
+    div cx
+    cmp dx,0
+    jne ntleap
+    mov dx,0
+    pop ax
+    mov cx,100
+    div cx
+    cmp dx,0
+    jne isLeap
+ntleap:
+    mov ah,9
+    mov dx,45
+    int 21h
+    jmp mainRet
+isLeap:
+    mov ah,9
+    mov dx,37
+    int 21h
+mainRet:
+    mov ax,4c00h
+    int 21h
+    
+cls:
+    push bx
+    push cx
+    push es
+
+    mov bx,0b800h
+    mov es,bx
+    mov bx,0
+    mov cx,2000
+clsLoop:
+    mov byte ptr es:[bx],' '
+    add bx,2
+    loop clsLoop
+
+    pop es
+    pop cx
+    pop bx
+ret
+
+getStr:
+    push ax
+
+getStrLoop:
+    mov ax,top
+    cmp ax,15
+    je enterKey
+    mov ah,0
+    int 16h
+    cmp al,20h
+    jb notChar
+
+    mov ah,0
+    call charFun
+    mov ah,2
+    call charFun
+
+    jmp getStrLoop
+notChar:
+    cmp ah,0eh
+    je backKey
+    cmp ah,1ch
+    je enterKey
+    jmp getStrLoop
+backKey:
+    mov ah,1
+    call charFun
+    mov ah,2
+    call charFun
+    jmp getStrLoop
+enterKey:
+    mov al,0
+    mov ah,0
+    call charFun
+    mov ah,2
+    call charFun
+
+    pop ax
+ret
+
+;ah 0 pushChar 1 popChar 2 showChar
+charFun:
+    jmp short charInit
+
+    table dw pushChar,popChar,showChar
+
+charInit:
+    push bx
+    push dx
+    push di
+    push es
+
+    cmp ah,2
+    ja charFunRet
+
+    mov bl,ah
+    mov bh,0
+    add bx,bx
+    jmp word ptr table[bx]
+    
+pushChar:
+    mov bx,top
+    mov [si][bx],al
+    inc top
+    jmp charFunRet
+
+popChar:
+    cmp top,0
+    je charFunRet
+    dec top
+    mov bx,top
+    mov al,[si][bx]
+    jmp charFunRet
+
+showChar:
+    mov bx,0b800h
+    mov es,bx
+    mov al,160
+    mov ah,0
+    mul dh
+    mov di,ax
+    add dl,dl
+    mov dh,0
+    add di,dx
+
+    mov bx,0
+showCharLoop:
+    cmp bx,top
+    je isEmpty
+    mov al,[si][bx]
+    mov es:[di],al
+    mov byte ptr es:[di+2],' '
+    inc bx
+    add di,2
+    jmp showCharLoop
+    
+isEmpty:
+    mov byte ptr es:[di],' '
+
+    mov ax,di
+    mov dl,160
+    div dl
+    mov dh,al
+
+    mov al,ah
+    mov ah,0
+    mov dl,2
+    div dl
+    mov dl,al
+
+    mov ah,2
+    mov bh,0
+    int 10h
+
+charFunRet:
+    pop es
+    pop di
+    pop dx
+    pop bx
+ret
+
+;dx=0 success dx=1 fail 
+transDigit:
+    push bx
+    push cx
+    pushf
+
+    mov ax,0
+    mov cx,10
+    mov dx,0
+    push ax
+    popf
+transLoop:
+    mov bl,byte ptr ds:[si]
+    cmp bl,0
+    je transRet
+    cmp bl,39h
+    ja transFail
+    cmp bl,30h
+    jb transFail
+    sub bl,30h
+    mul cx
+    jb transFail    ;cf=1
+    mov bh,0
+    add ax,bx
+    jb transFail    ;cf=1
+    inc si
+jmp transLoop
+
+transFail:
+    mov dx,1
+transRet:
+    popf
+    pop cx
+    pop bx
+ret
+
+code ends
+
+end start
+```
+
+###  三、实验结果分析及实验报告
+
+- 这里假设输入的年份∈(0,2^16-1)
+- 对非法输入进行了有效检测，包括负值，过大的值，非数字
+- 对mul产生cf更正了认知，注意到div的overflow
+- 从头撸了输入程序，写到后面，程序越写越丑
+- 希望2020越来越好吧:smiley:
+![LAB4 Result](http://q9apk9x38.bkt.clouddn.com/images/TPoM-IT-LAB/MPLAB6.JPG)
