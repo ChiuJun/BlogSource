@@ -2186,4 +2186,198 @@ end start
 
 ## 实验 17 编写包含多个功能子程序的中断例程
 
+- 安装一个新的int 7ch中断例程，实现通过逻辑扇区号对软盘进行读写。  
+    参数说明：
+    1. 用AH寄存器传递功能号：0表示读 1表示写；
+    2. 用DX寄存器传递要读写的扇区的逻辑扇区号(0-2879)；
+    3. 用ES:BX指向存储读出数据或写入数据的内存区。
+- 遇到的Bug：  
+    因为是直接复制用的[实验 16](#toc-heading-18)的框架  
+    其中第15行开始，修改了BX的值，而BX又是int 7ch的参数，但是没有在调用子程序之前恢复其值  
+    导致向软盘写入数据的时候，偏移地址不对，会少写两个字节的数据。  
+    还是要注意保护寄存器的值啊！
+
+```x86asm
+assume cs:code
+
+data segment
+    db 'Test int7ch:read from floppy sectors.','$'
+data ends
+
+backup segment
+    db 512 dup (0)
+backup ends
+
+stack segment
+    dw 20h dup (0)
+stack ends
+
+code segment
+
+start:
+    mov ax,stack
+    mov ss,ax
+    mov sp,20h
+
+    push cs
+    pop ds
+    mov si,int7c
+    mov ax,0
+    mov es,ax
+    mov di,200h
+
+    mov cx,int7cEnd-int7c
+    cld
+    rep movsb
+
+    ;install int 7ch
+    mov ax,0
+    mov es,ax
+    mov word ptr es:[4*7ch],200h
+    mov word ptr es:[4*7ch+2],0
+
+    ;test int 7ch
+
+    ;backup sector 1024
+    mov ax,backup
+    mov es,ax
+
+    mov ah,0
+    mov dx,1024
+    mov bx,0
+    int 7ch
+    
+    push es
+    ;test begin
+    mov ax,data
+    mov es,ax
+    mov ds,ax
+
+    mov ah,2
+    mov bh,0
+    mov dh,8
+    mov dl,30
+    int 10h
+    mov ah,9
+    mov dx,0
+    int 21h
+
+    mov ah,1
+    mov dx,1024
+    mov bx,0
+    int 7ch
+
+    ;change data
+    mov byte ptr es:[0],'!'
+
+    mov ah,0
+    mov dx,1024
+    mov bx,0
+    int 7ch
+
+    mov ah,2
+    mov bh,0
+    mov dh,12
+    mov dl,30
+    int 10h
+    mov ah,9
+    mov dx,0
+    int 21h
+
+    ;test end
+    pop es
+
+    ;recovery sector 1024
+    mov ah,1
+    mov dx,1024
+    mov bx,0
+    int 7ch
+
+    mov ax,4c00h
+    int 21h
+
+    org 200h
+int7c:
+    jmp short int7cBegin
+
+    table dw rSector,wSector
+
+    int7cBegin:
+        push si
+        
+        cmp ah,1
+        ja int7cRet
+
+        push bx
+        mov bl,ah
+        mov bh,0
+        add bx,bx
+        mov si,bx
+        pop bx
+        call word ptr table[si]
+
+    int7cRet:
+        pop si
+    iret
+
+    rSector:
+        push ax
+        push cx
+        push dx
+
+        call getPhy
+        mov ah,2
+        mov al,1
+        int 13h
+
+        pop dx
+        pop cx
+        pop ax
+    ret
+
+    wSector:
+        push ax
+        push cx
+        push dx
+
+        call getPhy
+        mov ah,3
+        mov al,1
+        int 13h
+
+        pop dx
+        pop cx
+        pop ax
+    ret
+
+    getPhy:
+        mov ax,dx
+        mov dx,0
+        mov cx,1440
+        div cx
+        push ax ;storage int(dx/1440)
+        
+        mov ax,dx
+        mov cl,18
+        div cl
+
+        mov ch,al
+        mov cl,ah
+        inc cl
+
+        pop dx
+        mov dh,dl
+        mov dl,0
+    ret
+
+int7cEnd:
+    nop
+
+code ends
+
+end start
+```
+
+## 课程设计 2
+
 - 未完
