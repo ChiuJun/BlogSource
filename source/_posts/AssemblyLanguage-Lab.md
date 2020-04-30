@@ -2380,4 +2380,690 @@ end start
 
 ## 课程设计 2
 
-- 未完
+- 要求不列了,最后还是烂尾了😭
+- 完成情况
+    - 功能1、2
+    - 功能3的ESC退出功能点没有完成  
+        按ESC会造成严重错误从而直接退出虚拟机  
+        找了很久的Bug都没什么头绪
+    - 功能4没有对输入进行必要的验证  
+        交互不够友好
+- 虽然大部分都是之前已经写好的程序，但还是遇到了很多问题。其中值得记录的有
+    - 搭建程序框架时，死活读不到程序  
+    原因是对伪指令org 7c00h的误解  
+    编译器实际上会把代码放到cs段的7c00h处，而不是仅仅计算时候以7c00h为偏移  
+    把org 7c00h放到boot之后，导致8行计算mov bx，boot时候，实际是一个很小的值
+    - 编写功能2时，死活没法重启，直接跑崩  
+    一度怀疑是电脑出了问题，经过很久的debug，终于找到了原因  
+    SS设置在了7c00h之后，而系统引导程序依赖于bios设置的stack  
+    这样会导致栈区和代码重合，进而修改系统引导程序的代码
+
+```x86asm
+assume cs:code
+
+code segment
+
+start:
+    mov ax,cs
+    mov es,ax
+    mov bx,boot
+
+    mov ah,3
+    mov al,1
+    mov ch,0
+    mov cl,1
+    mov dh,0
+    mov dl,0
+    int 13h
+
+    mov ax,cs
+    mov es,ax
+    mov bx,bootLoader
+
+    mov ah,3
+    mov al,3
+    mov ch,0
+    mov cl,2
+    mov dh,0
+    mov dl,0
+    int 13h
+
+    mov ax,4c00h
+    int 21h
+
+    org 7c00h
+boot:
+    mov ax,0
+    mov ss,ax
+    mov sp,7c00h
+
+    mov ax,0
+    mov ds,ax
+
+    mov ax,0
+    mov es,ax
+    mov bx,7e00h
+
+    mov ah,2
+    mov al,3
+    mov ch,0
+    mov cl,2
+    mov dh,0
+    mov dl,0
+    int 13h
+    
+    mov bx,0
+	push bx
+	mov bx,7e00h 
+	push bx
+	retf
+
+    org 7e00h
+bootLoader:
+    jmp bootStart
+
+    option1 db '1) reset pc    ',0
+    option2 db '2) start system',0
+    option3 db '3) clock       ',0
+    option4 db '4) set clock   ',0
+    buffer  db '                '
+    tip     db 'Press F1 to change color.ESC return menu',0
+    menu dw resetPC,startSys,clock,setClock
+    dataPos: db 9,8,7,4,2,0
+    top dw 0
+;###########################################################################
+bootStart:
+    call showMenu
+    call bootFun
+
+    mov ax,4c00h
+    int 21h
+;###########################################################################
+showMenu:
+    push ax
+    push bx
+    push cx
+    push dx
+
+    mov dl,2
+    call cls
+
+    mov ax,0    
+    mov dh,10
+    mov dl,32
+    mov cl,2
+    mov si,offset option1
+menuDetail:
+    call show_str
+    add si,10h
+    inc dh
+    inc ax
+    cmp ax,4
+jne menuDetail
+
+    mov ah,2
+    mov bh,0
+    mov dh,14
+    mov dl,32
+    int 10h
+
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+ret
+;###########################################################################
+bootFun:
+    call clearBuff
+
+    mov dh,14
+    mov dl,32 
+    mov si,offset buffer
+    call getStr
+
+    mov si,offset buffer
+    call transDigit
+    mov top,0
+    cmp dx,0
+    jne bootStart   ;dx!=0 input illegal
+
+
+    dec al          ;else  legall
+    cmp al,4
+    ja bootFun
+
+    mov bl,al
+    mov bh,0
+    add bx,bx
+    jmp word ptr menu[bx]
+;---------------------------------------------------------------------------
+resetPC:
+    mov bx,0ffffh
+    push bx
+    mov bx,0
+    push bx
+    retf
+;---------------------------------------------------------------------------
+startSys:
+    mov ah,2
+    mov bh,0
+    mov dh,0
+    mov dl,0
+    int 10h
+
+    mov dl,7
+    call cls
+
+    mov ax,0
+    mov es,ax
+    mov bx,7c00h
+
+    mov ah,2
+    mov al,1
+    mov ch,0
+    mov cl,1
+    mov dh,0
+    mov dl,80h
+    int 13h
+
+    mov bx,0
+    push bx
+    mov bx,7c00h
+    push bx
+    retf
+;---------------------------------------------------------------------------
+clock:
+    push ax
+    push bx
+    push cx
+    push dx
+    push si
+
+    call instInt9
+    mov dl,2
+    call cls
+
+    mov ax,0    
+    mov dh,13
+    mov dl,20
+    mov cl,2
+    mov si,offset tip
+    call show_str
+
+    mov ah,2
+    mov bh,0
+    mov dh,14
+    mov dl,32
+    int 10h
+
+showTimeLoop:
+    call showTime
+jmp showTimeLoop
+
+clockRet:
+    call recInt9
+    jmp bootStart
+;---------------------------------------------------------------------------
+setClock:
+    push cx
+    mov dl,2
+    call cls
+
+    call showTime
+    
+    mov cx,0
+setClockLoop:
+    call setField
+    inc cx
+    cmp cx,6
+jne setClockLoop
+    
+    pop cx
+    jmp bootStart
+    
+ret
+setField:
+    push ax
+    push bx
+    push cx
+    push dx
+
+    mov ah,2
+    mov bh,0
+    mov dh,12
+    mov dl,32
+    add dl,cl
+    add dl,cl
+    add dl,cl
+    int 10h
+
+    mov si,offset buffer
+    call getStr
+
+    mov si,offset buffer
+    mov ah,ds:[si]
+    sub ah,30h
+    inc si
+    mov al,ds:[si]
+    sub al,30h
+    mov top,0
+
+    and ah,00001111b
+    push cx
+    mov cl,4
+    shl ah,cl
+    pop cx
+    and al,00001111b
+    or al,ah
+
+    push ax
+    mov si,offset dataPos
+    add si,cx
+    mov al,ds:[si]
+    out 70h,al
+    pop ax
+    out 71h,al
+
+setFieldRet:
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+ret
+;###########################################################################
+getStr:
+    push ax
+
+    call clearBuff
+getStrLoop:
+    mov ax,top
+    cmp ax,2
+    je enterKey
+    mov ah,0
+    int 16h
+    cmp al,20h
+    jb notChar
+
+    mov ah,0
+    call charFun
+    mov ah,2
+    call charFun
+
+    jmp getStrLoop
+notChar:
+    cmp ah,0eh
+    je backKey
+    cmp ah,1ch
+    je enterKey
+    jmp getStrLoop
+backKey:
+    mov ah,1
+    call charFun
+    mov ah,2
+    call charFun
+    jmp getStrLoop
+enterKey:
+    mov al,0
+    mov ah,0
+    call charFun
+    mov ah,2
+    call charFun
+
+    pop ax
+ret
+
+;ah 0 pushChar 1 popChar 2 showChar
+charFun:
+    jmp short charInit
+
+    table dw pushChar,popChar,showChar
+
+charInit:
+    push bx
+    push dx
+    push di
+    push es
+
+    cmp ah,2
+    ja charFunRet
+
+    mov bl,ah
+    mov bh,0
+    add bx,bx
+    jmp word ptr table[bx]
+    
+pushChar:
+    mov bx,top
+    mov [si][bx],al
+    inc top
+    jmp charFunRet
+
+popChar:
+    cmp top,0
+    je charFunRet
+    dec top
+    mov bx,top
+    mov al,[si][bx]
+    jmp charFunRet
+
+showChar:
+    mov bx,0b800h
+    mov es,bx
+    mov al,160
+    mov ah,0
+    mul dh
+    mov di,ax
+    add dl,dl
+    mov dh,0
+    add di,dx
+
+    mov bx,0
+showCharLoop:
+    cmp bx,top
+    je isEmpty
+    mov al,[si][bx]
+    mov es:[di],al
+    mov byte ptr es:[di+2],' '
+    inc bx
+    add di,2
+    jmp showCharLoop
+    
+isEmpty:
+    mov byte ptr es:[di],' '
+charFunRet:
+    pop es
+    pop di
+    pop dx
+    pop bx
+ret
+;###########################################################################
+;dx=0 success dx=1 fail 
+transDigit:
+    push bx
+    push cx
+    pushf
+
+    mov ax,0
+    mov cx,10
+    mov dx,0
+    push ax
+    popf
+transLoop:
+    mov bl,byte ptr ds:[si]
+    cmp bl,0
+    je transRet
+    cmp bl,39h
+    ja transFail
+    cmp bl,30h
+    jb transFail
+    sub bl,30h
+    mul cx
+    jb transFail    ;cf=1
+    mov bh,0
+    add ax,bx
+    jb transFail    ;cf=1
+    inc si
+jmp transLoop
+
+transFail:
+    mov dx,1
+transRet:
+    popf
+    pop cx
+    pop bx
+ret
+;###########################################################################
+show_str:
+    push ax
+    push bx
+    push cx
+    push dx
+    push di
+    push si
+    push es
+
+    mov ax,0B800H
+    mov es,ax
+
+    mov al,2
+    mul dl
+    mov di,ax
+    mov al,0a0h
+    mul dh
+    mov bx,ax
+    add bx,di
+
+    mov di,0
+    mov al,cl
+
+str_loop:
+    mov cx,0
+    mov cl,[si]
+    jcxz ok
+
+    mov ch,al
+    mov es:[bx+di],cx
+
+    inc si
+    add di,2
+
+    jmp short str_loop
+ok:
+    pop es
+    pop si
+    pop di
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+ret
+;###########################################################################
+;parameter dl->foreground color
+cls:
+    push bx
+    push cx
+    push es
+
+    mov bx,0b800h
+    mov es,bx
+    mov bx,0
+    mov cx,2000
+clsLoop:
+    mov byte ptr es:[bx],' '
+    inc bx
+    mov byte ptr es:[bx],dl
+    inc bx
+    loop clsLoop
+
+    pop es
+    pop cx
+    pop bx
+ret
+;###########################################################################
+clearBuff:
+    mov ah,1
+	int 16h
+	jz clearBuffRet
+	mov ah,0
+	int 16h
+	jmp clearBuff
+clearBuffRet:
+ret
+;###########################################################################
+showTime:
+    push si
+    push di
+    push bx
+    push es
+    push cx
+    push ax
+
+    mov si,offset dataPos
+
+    mov bx,0b800h
+    mov es,bx
+    mov di,160*12+32*2
+
+    mov cx,6
+    nextField:
+    push cx
+
+    mov al,ds:[si]
+    inc si
+    out 70h,al
+    in al,71h
+
+    mov ah,al
+    mov cl,4
+    shr ah,cl
+    and al,0fh
+
+    add ah,30h
+    add al,30h
+
+    mov es:[di],ah
+    add di,2
+    mov es:[di],al
+    add di,2
+
+    pop cx
+
+    cmp cx,1
+    je doNotShow
+
+    cmp cx,4
+    mov ah,32   ;ASCII 32 (space)
+    je show
+    mov ah,47   ;ASCII 47 /
+    ja show
+    mov ah,58   ;ASCII 58 :
+    jb show
+    show:
+    mov es:[di],ah
+    add di,2
+
+    doNotShow:
+    loop nextField
+    
+    pop ax
+    pop cx
+    pop es
+    pop bx
+    pop di
+    pop si
+ret
+;###########################################################################
+instInt9:
+    push ds
+    push ax
+    push bx
+    push cx
+    push dx
+    push di
+
+    push cs
+    pop ds
+
+    mov ax,0
+    mov es,ax
+    mov di,200h
+
+    push es:[4*9]
+    pop es:[di]
+    add di,2
+    push es:[4*9+2]
+    pop es:[di]
+    add di,2
+
+    mov si,newInt9
+    mov cx,newInt9End-newInt9
+    cld
+    rep movsb
+
+    cli
+    mov word ptr es:[4*9],204h
+    mov word ptr es:[4*9+2],0
+    sti
+
+    pop di
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    pop ds
+ret
+
+recInt9:
+    push ax
+    push es
+
+    mov ax,0
+    mov es,ax
+
+    cli
+    push es:[200h]
+    pop es:[4*9]
+    push es:[202h]
+    pop es:[4*9+2]
+    sti
+
+    pop es
+    pop ax
+ret
+
+newInt9:
+    push ax
+    push bx
+    push cx
+    push es
+
+    in al,60h
+
+    pushf
+    call dword ptr cs:[200h]
+
+    cmp al,10000001b    ;ESC
+    je escFun
+    cmp al,10111011b    ;F1
+    je f1Fun
+
+    jmp int9Ret
+
+escFun:
+    pop es
+    pop cx
+    pop bx
+    pop ax
+    add sp,4
+    popf
+    jmp clockRet
+
+f1Fun:
+    mov ax,0b800h
+    mov es,ax
+    mov bx,1
+    mov cx,2000
+    f1FunLoop:
+        inc byte ptr es:[bx]
+        add bx,2
+    loop f1FunLoop
+
+int9Ret:
+    pop es
+    pop cx
+    pop bx
+    pop ax
+    iret
+newInt9End:
+    nop
+;###########################################################################
+code ends
+
+end start
+```
+
+## 尾声
+
+- 心心念念的"汇编语言 王爽"终于快读完了，总的来说难度不高，读起来也挺有趣
+- 最后还是有缺憾，课程设计2没有全部完成（以后应该会重写
+- 另开一篇综合研究
