@@ -286,7 +286,7 @@ Turbo C Version 2.0 Copyright (C) 1987, 1988 Borland International
 4. 用Debug对m.exe进行跟踪：  
     注意：使用g命令和p命令。
     - 找到对main函数进行调用的指令的地址  
-        和[研究试验 2 ](#toc-heading3)中第2问一样，在CS:011A处对main函数进行了调用
+        和[研究试验 2 ](#toc-heading-3)中第2问一样，在CS:011A处对main函数进行了调用
     - 找到整个程序返回的指令  
         位于CS:0151-CS:0156处的3调指令，调用了int 21h中断例程
 
@@ -426,7 +426,61 @@ Turbo C Version 2.0 Copyright (C) 1987, 1988 Borland International
     }
     ```
     - showchar通过参数int n传递需要显示多少个字符，而参数n在最后入栈，SS段中BP+4即可获得
-    - 未完
+    - 参数从右向左入栈，最后入栈的参数是指向format首地址(偏移地址)的指针，而printf函数会调用相关函数对format进行解析。
+        所以说printf的变参要和format中的占位符一一对应，否则会出现难以理解的输出。
+        
 3. 实现一个简单的printf函数，只需支持"%c %d"即可
+    ```c
+    MyPrintf(char * format,...);
 
-- 未完
+    main(){
+        MyPrintf("This is MyPrintf %c %d",'!',233);
+    }
+
+    MyPrintf(char * format,...){
+        int cnt=0;
+        int offset=0;
+        while(*format!=0){
+            switch (*format)
+            {
+            case '%':
+                format+=1;
+                if(*format=='c'){
+                    *(char far *)(0xb8000000+160*12+40+2*offset++)=*(int *)(_BP+6+2*cnt++);
+                }else if(*format=='d'){
+                    int num=*(int *)(_BP+6+2*cnt++);
+                    int len=0;
+                    char tmp[10];
+                    while (num!=0){
+                        tmp[len++]=(num%10)+0x30;
+                        num/=10;
+                    }
+                    len--;
+                    while (len>=0){
+                        *(char far *)(0xb8000000+160*12+40+2*offset++)=tmp[len--];
+                    }
+                }else{
+                    *(char far *)(0xb8000000+160*12+40+2*offset++)=*format;
+                }
+                format+=1;
+                break;
+            default :
+                *(char far *)(0xb8000000+160*12+40+2*offset++)=*format;
+                format+=1;
+                break;
+            }
+        }
+    }
+    ```
+    输出
+    ```bash
+    This is MyPrintf ! 233
+    ```
+
+## 尾声
+
+- Cover To Cover，算是读完啦
+- 本以为综合研究会很难，实际上更多的是阅读代码理解思想。虽然学过编译原理，但是都忘光光了(＠_＠;)
+- 很多人看不上16位汇编，觉得这是老古董，但是对于一些刚学完C的同学，再去看这本书绝对是有受用之处。
+- 这本书被赞誉位经典并不过分，有很多有意思的地方，等学到其他地方再回想起来定会拍案叫绝。
+- 最大的乐趣莫过于体验了一把没有GUI时的IDE
