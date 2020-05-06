@@ -341,6 +341,84 @@ end start
 
 ![LAB4 Result](http://q9apk9x38.bkt.clouddn.com/images/TPoM-IT-LAB/MPLAB4.JPG)
 
+## 实验五 系统中断调用
+
+### 一、实验内容及要求
+
+- 实验目的：  
+    掌握中断程序的概念以及如何响应中断
+- 编写程序：  
+    编写0号中断的处理程序，使得除法溢出发生时，在屏幕中间显示字符串"overflow!"，然后返回到DOS。
+
+###  二、实验原理及步骤
+
+```x86asm
+assume cs:code
+
+code segment
+
+start:
+    mov ax,cs
+    mov ds,ax
+    mov si,do0
+
+    mov ax,0
+    mov es,ax
+    mov di,200h
+
+    mov cx,do0end-do0
+    cld
+    rep movsb
+
+    mov word ptr es:[4*0],200h
+    mov word ptr es:[4*0+2],0
+
+    ;test
+    mov ax,1
+    mov cl,0
+    div cl
+
+    mov ax,4c00h
+    int 21h
+
+do0:
+    jmp do0start
+    db "overflow!"
+do0start:
+    mov ax,cs
+    mov ds,ax
+    mov si,202h
+
+    mov ax,0b800h
+    mov es,ax
+    mov di,12*160+34*2
+
+    mov cx,9
+    S:
+    mov al,[si]
+    mov es:[di],al
+    inc di
+    mov byte ptr es:[di],2
+    inc di
+    inc si    
+    loop s
+
+    mov ax,4c00h
+    int 21h
+do0end:
+    nop
+
+code ends
+
+end start
+```
+
+###  三、实验结果分析及实验报告
+
+- 这个实验其实就是王爽《汇编语言》第三版中12.7的内容，博主直接把[实验 12](https://jiabi.tech/2020/04/13/assemblylanguage-lab/#toc-heading-14)搬过来了~(￣▽￣)~*  
+
+![LAB5 Result](http://q9apk9x38.bkt.clouddn.com/images/TPoM-IT-LAB/MPLAB5.JPG)
+
 ## 实验六 判断闰年的程序设计
 
 ### 一、实验内容及要求
