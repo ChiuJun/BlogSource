@@ -2,7 +2,7 @@
 title: Chiu
 top: false
 cover: false
-img: 'http://q9apk9x38.bkt.clouddn.com/medias/featureimages/chiu.jpg'
+img: 'http://bucket.jiabi.tech/medias/featureimages/chiu.jpg'
 toc: true
 mathjax: true
 date: 2020-03-28 12:09:34

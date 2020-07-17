@@ -2,7 +2,7 @@
 title: JavaEE(SSM) MyBatis基础
 top: false
 cover: false
-img: 'http://q9apk9x38.bkt.clouddn.com/medias/featureimages/ssm.jpg'
+img: 'http://bucket.jiabi.tech/medias/featureimages/ssm.jpg'
 toc: true
 mathjax: true
 date: 2020-03-26 15:20:14

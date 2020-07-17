@@ -2,7 +2,7 @@
 title: AssemblyLanguage Research
 top: false
 cover: false
-img: 'http://q9apk9x38.bkt.clouddn.com/medias/featureimages/asm.jpg'
+img: 'http://bucket.jiabi.tech/medias/featureimages/asm.jpg'
 toc: true
 mathjax: true
 date: 2020-05-01 16:32:55

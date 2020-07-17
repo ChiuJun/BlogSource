@@ -2,7 +2,7 @@
 title: 微机原理与接口技术 课程实验
 top: false
 cover: false
-img: http://q9apk9x38.bkt.clouddn.com/medias/featureimages/code.jpg
+img: http://bucket.jiabi.tech/medias/featureimages/code.jpg
 toc: true
 mathjax: true
 date: 2020-03-25 11:06:44
@@ -83,11 +83,11 @@ Copyright (C) Microsoft Corp 1993.  A1l rights reserved.
 
 1. LAB1_1: 略
 2. LAB1_2:  
-    ![LAB1_2 Result](http://q9apk9x38.bkt.clouddn.com/images/TPoM-IT-LAB/lab1_2.jpg)
+    ![LAB1_2 Result](http://bucket.jiabi.tech/images/TPoM-IT-LAB/lab1_2.jpg)
 3. LAB1_3: 显存区域，无现象
 4. LAB1_4:  
-    ![LAB1_4 Code](http://q9apk9x38.bkt.clouddn.com/images/TPoM-IT-LAB/lab1_4.jpg)
-    ![LAB1_4 Result](http://q9apk9x38.bkt.clouddn.com/images/TPoM-IT-LAB/lab1_4_result.jpg)
+    ![LAB1_4 Code](http://bucket.jiabi.tech/images/TPoM-IT-LAB/lab1_4.jpg)
+    ![LAB1_4 Result](http://bucket.jiabi.tech/images/TPoM-IT-LAB/lab1_4_result.jpg)
 
 ## 实验二 数据处理实验
 
@@ -134,9 +134,9 @@ Copyright (C) Microsoft Corp 1993.  A1l rights reserved.
 ###  三、实验结果分析及实验报告
 
 1. LAB2_1:  
-    ![LAB2_1 Result](http://q9apk9x38.bkt.clouddn.com/images/TPoM-IT-LAB/lab2_1.jpg)
+    ![LAB2_1 Result](http://bucket.jiabi.tech/images/TPoM-IT-LAB/lab2_1.jpg)
 2. LAB2_2:  
-    ![LAB2_2 Result](http://q9apk9x38.bkt.clouddn.com/images/TPoM-IT-LAB/lab2_2.jpg)
+    ![LAB2_2 Result](http://bucket.jiabi.tech/images/TPoM-IT-LAB/lab2_2.jpg)
 
 ## 实验三 分支程序设计
 
@@ -238,7 +238,7 @@ end start
 
 ###  三、实验结果分析及实验报告
 
-![LAB3 Result](http://q9apk9x38.bkt.clouddn.com/images/TPoM-IT-LAB/lab3_result.jpg)
+![LAB3 Result](http://bucket.jiabi.tech/images/TPoM-IT-LAB/lab3_result.jpg)
 
 ## 实验四 循环程序设计
 
@@ -339,7 +339,7 @@ end start
 
 ###  三、实验结果分析及实验报告
 
-![LAB4 Result](http://q9apk9x38.bkt.clouddn.com/images/TPoM-IT-LAB/MPLAB4.JPG)
+![LAB4 Result](http://bucket.jiabi.tech/images/TPoM-IT-LAB/MPLAB4.JPG)
 
 ## 实验五 系统中断调用
 
@@ -417,7 +417,7 @@ end start
 
 - 这个实验其实就是王爽《汇编语言》第三版中12.7的内容，博主直接把[实验 12](https://jiabi.tech/2020/04/13/assemblylanguage-lab/#toc-heading-14)搬过来了~(￣▽￣)~*  
 
-![LAB5 Result](http://q9apk9x38.bkt.clouddn.com/images/TPoM-IT-LAB/MPLAB5.JPG)
+![LAB5 Result](http://bucket.jiabi.tech/images/TPoM-IT-LAB/MPLAB5.JPG)
 
 ## 实验六 判断闰年的程序设计
 
@@ -715,4 +715,4 @@ end start
 - 对mul产生cf更正了认知，注意到div的overflow
 - 从头撸了输入程序，写到后面，程序越写越丑
 - 希望2020越来越好吧:smiley:
-![LAB4 Result](http://q9apk9x38.bkt.clouddn.com/images/TPoM-IT-LAB/MPLAB6.JPG)
+![LAB4 Result](http://bucket.jiabi.tech/images/TPoM-IT-LAB/MPLAB6.JPG)

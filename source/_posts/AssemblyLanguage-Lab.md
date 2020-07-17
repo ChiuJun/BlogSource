@@ -2,7 +2,7 @@
 title: Assembly Language Lab
 top: false
 cover: false
-img: 'http://q9apk9x38.bkt.clouddn.com/medias/featureimages/asm.jpg'
+img: 'http://bucket.jiabi.tech/medias/featureimages/asm.jpg'
 toc: true
 mathjax: true
 date: 2020-04-13 01:32:21
@@ -68,7 +68,7 @@ Copyright (C) Microsoft Corp 1993.  A1l rights reserved.
     PC机主板上的ROM写有一个生产日期，在内存FFF00H～FFFFFH的某几个单元中，请找到这个生产日期并试图改变它。  
     提示，如果读者对实验的结果感到疑惑，请仔细阅读第1章中的1.15节。  
     结果如图：04/13/18，只读不可改写  
-    ![LAB1_3 Result](http://q9apk9x38.bkt.clouddn.com/images/asmLab/lab1_3.jpg)
+    ![LAB1_3 Result](http://bucket.jiabi.tech/images/asmLab/lab1_3.jpg)
 
 4. 向内存从B8100H开始的单元中填写数据，如：  
     ```bash
@@ -105,7 +105,7 @@ Copyright (C) Microsoft Corp 1993.  A1l rights reserved.
     push [6]    ;sp = 00FC; 修改的内存单元的地址是 220FC 内容为 2F34
     ```
 2. 仔细观察图3.19中的实验过程，然后分析：为什么2000:0～2000:f中的内容会发生改变？  
-    ![IMG 3.19](http://q9apk9x38.bkt.clouddn.com/images/asmLab/img3.19.jpg)  
+    ![IMG 3.19](http://bucket.jiabi.tech/images/asmLab/img3.19.jpg)  
     在使用T命令进行单步追踪的时候，产生了中断，CS和IP等寄存器依此入栈，导致了内存相关位置内容的改变。
 
 ## 实验 3 编程、编译、连接、跟踪
@@ -139,7 +139,7 @@ Copyright (C) Microsoft Corp 1993.  A1l rights reserved.
 3. PSP的头两个字节是CD 20，用Debug加载 t1.exe，查看PSP的内容。  
     注：这里应该是"-u 0A67:0"  
         即 0A67 = CS-0010h  
-    ![PSP](http://q9apk9x38.bkt.clouddn.com/images/asmLab/lab3_result_u_ds.jpg)
+    ![PSP](http://bucket.jiabi.tech/images/asmLab/lab3_result_u_ds.jpg)
 
 ## 实验 4 [bx]和loop的使用
 
@@ -530,12 +530,12 @@ Copyright (C) Microsoft Corp 1993.  A1l rights reserved.
 
     end start
     ```
-    ![LAB6_2 Result](http://q9apk9x38.bkt.clouddn.com/images/asmLab/lab6_2_result.jpg)
+    ![LAB6_2 Result](http://bucket.jiabi.tech/images/asmLab/lab6_2_result.jpg)
 
 ## 实验 7 寻址方式在结构化数据访问中的应用
 
 - 编程，将 data 段中的数据按如下格式写入到 table 段中，并计算21年中的人均收入(取整)，结果也按照下面的格式保存在table段中。  
-    ![LAB7 格式](http://q9apk9x38.bkt.clouddn.com/images/asmLab/lab7_format.jpg)  
+    ![LAB7 格式](http://bucket.jiabi.tech/images/asmLab/lab7_format.jpg)  
     编写完之后，博主觉得这样的写法更容易出错，在书上记下了一个简单易懂的想法，之后在[课程设计 1](#toc-heading-12)重新进行了编写。   
     编写这个程序遇到一个新手容易忘记的问题：  
     - mov 指令不能在两个存储单元之间直接传送数据  
@@ -746,7 +746,7 @@ Copyright (C) Microsoft Corp 1993.  A1l rights reserved.
 
     end start
     ```
-    ![LAB9 Result](http://q9apk9x38.bkt.clouddn.com/images/asmLab/lab9_result.jpg)
+    ![LAB9 Result](http://bucket.jiabi.tech/images/asmLab/lab9_result.jpg)
 
 ## 实验 10 编写子程序
 
@@ -1404,7 +1404,7 @@ code ends
 
 end start
 ```
-![Course Design 1](http://q9apk9x38.bkt.clouddn.com/images/asmLab/CourseDesign1.jpg)
+![Course Design 1](http://bucket.jiabi.tech/images/asmLab/CourseDesign1.jpg)
 
 ## 实验 11 编写子程序
 

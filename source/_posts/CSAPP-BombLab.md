@@ -2,7 +2,7 @@
 title: 深入理解计算机系统 BombLab
 top: false
 cover: false
-img: 'http://q9apk9x38.bkt.clouddn.com/medias/featureimages/csapp_b.jpg'
+img: 'http://bucket.jiabi.tech/medias/featureimages/csapp_b.jpg'
 toc: true
 mathjax: true
 date: 2020-05-07 18:52:10

@@ -2,7 +2,7 @@
 title: PhoneNet 工具类实现
 top: false
 cover: false
-img: 'http://q9apk9x38.bkt.clouddn.com/medias/featureimages/ssm.jpg'
+img: 'http://bucket.jiabi.tech/medias/featureimages/ssm.jpg'
 toc: true
 mathjax: true
 date: 2020-04-06 15:45:34
